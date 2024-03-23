@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:fhirr4questionnaire-response-api="http://www.mulesoft.org/schema/mule/fhirr4questionnaire-response-api"
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" 
 	xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth"
 	xmlns:solace="http://www.mulesoft.org/schema/mule/solace" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/solace http://www.mulesoft.org/schema/mule/solace/current/mule-solace.xsd
 http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd
-http://www.mulesoft.org/schema/mule/fhirr4questionnaire-response-api http://www.mulesoft.org/schema/mule/fhirr4questionnaire-response-api/current/mule-fhirr4questionnaire-response-api.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6b8f8e19-ec20-421c-8fcb-6dd2a9f5ee64" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
@@ -22,7 +21,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</http:request-connection>
 	</http:request-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="b680350e-8a46-48bd-aaba-01139627ea19" file="properties-dev.yaml" />
-	<fhirr4questionnaire-response-api:config name="FHIR_R4_QuestionnaireResponse_API_Config" doc:name="FHIR R4 QuestionnaireResponse API Config" doc:id="f5f9c076-84a3-4e24-a4aa-4b723a5f09a2" property_host="fhir.api-dev.digital.health.nz" />
 	<flow name="api-healthcheck" doc:id="a24d5a18-7634-4cee-b8a9-cb2e01c11281" >
 		<http:listener doc:name="Listener" doc:id="a9220afc-4e23-4da8-8d63-74d41261d6e9" config-ref="HTTP_Listener_config" path="/healthcheck"/>
 		<set-payload value="Healthcheck: OK" doc:name="Set Payload" doc:id="c2f630bb-bac2-488c-9d30-1df77fa67d0a" />

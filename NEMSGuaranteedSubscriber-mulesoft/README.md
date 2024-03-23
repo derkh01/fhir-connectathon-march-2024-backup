@@ -1,7 +1,7 @@
 
 # Demo Project in Mule 4
 
-# Tasks
+## Tasks
 - read messages off Solace to obtain event URL location
 - login to FHIR server
 - GET record from URL
@@ -9,7 +9,19 @@
 
 Can be deployed to Cloudhub 
 
-# Required properties in properties-dev.yaml
+
+## Project Build
+### Requirements:
+Java8 JDK (eg. openjdk8)
+Maven 3.8.7
+
+Build from directory of POM.xml
+```
+mvn clean package
+```
+Then run from Anypoint Studio
+
+### Required properties in properties-dev.yaml
 (see other NEMSGuaranteedSubscriber README.md for properties and replace **** with the values)
 
 ```
