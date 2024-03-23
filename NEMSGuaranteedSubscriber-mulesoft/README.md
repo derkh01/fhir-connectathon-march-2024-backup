@@ -5,7 +5,7 @@
 - read messages off Solace to obtain event URL location
 - login to FHIR server
 - GET record from URL
-- POST above response as payload to /$extract URI
+- POST above response as payload to /$extract URI to retrieve the goals
 
 Can be deployed to Cloudhub 
 
@@ -14,6 +14,7 @@ Can be deployed to Cloudhub
 ### Requirements:
 Java8 JDK (eg. openjdk8)
 Maven 3.8.7
+Anypoint Studio 7 (Mule 4)
 
 Build from directory of POM.xml
 ```
