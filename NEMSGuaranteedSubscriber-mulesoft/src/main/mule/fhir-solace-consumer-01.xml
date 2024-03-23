@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:oauth="http://www.mulesoft.org/schema/mule/oauth" xmlns:solace="http://www.mulesoft.org/schema/mule/solace"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/solace http://www.mulesoft.org/schema/mule/solace/current/mule-solace.xsd
+http://www.mulesoft.org/schema/mule/oauth http://www.mulesoft.org/schema/mule/oauth/current/mule-oauth.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6b8f8e19-ec20-421c-8fcb-6dd2a9f5ee64" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<solace:config name="Solace_PubSub__Connector_Config" doc:name="Solace PubSub+ Connector Config" doc:id="383e9cd7-3841-4fe1-8ce0-df9785757bcb" >
+		<solace:connection clientUserName="${solace.clientUsername}" password="${solace.clientPassword}" brokerHost="${solace.brokerHost}" msgVPN="${solace.messageVpn}"/>
+	</solace:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="1d648971-0089-4cd3-ba25-1e7ef11f17f6">
+		<http:request-connection protocol="HTTPS">
+			<http:authentication >
+				<oauth:client-credentials-grant-type clientId="${auth.clientId}" clientSecret="${auth.clientSecret}" tokenUrl="${auth.server}" scopes="${auth.scope}"/>
+			</http:authentication>
+		</http:request-connection>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="b680350e-8a46-48bd-aaba-01139627ea19" file="properties-dev.yaml" />
+	<flow name="api-healthcheck" doc:id="a24d5a18-7634-4cee-b8a9-cb2e01c11281" >
+		<http:listener doc:name="Listener" doc:id="a9220afc-4e23-4da8-8d63-74d41261d6e9" config-ref="HTTP_Listener_config" path="/healthcheck"/>
+		<set-payload value="Healthcheck: OK" doc:name="Set Payload" doc:id="c2f630bb-bac2-488c-9d30-1df77fa67d0a" />
+	</flow>
+	<flow name="fhir-solace-consumer" doc:id="b68b2039-5e88-48bf-a087-ddc5c3628e20" >
+		<solace:queue-listener doc:name="Guaranteed Endpoint Listener" doc:id="53d6b62a-32cc-463f-9882-74eae8776c2d" address="henderson" config-ref="Solace_PubSub__Connector_Config"/>
+		<logger level="WARN" doc:name="Logger" doc:id="e12ad007-0a6b-4b1c-a6c2-4ac7ec5e8884" message="#[payload]"/>
+		<set-variable value="#[payload]" doc:name="solacePayload" doc:id="2c93ecb6-7828-486f-a892-d4824b9fed53" variableName="solacePayload"/>
+		<flow-ref doc:name="fhir-get-resource" doc:id="246744ae-8f5f-4655-8534-cb846da6b9a1" name="fhir-get-resource"/>
+	</flow>
+	<sub-flow name="fhir-get-resource" doc:id="ff9c9dad-13be-4d93-b532-e969b5e2b876" >
+		<http:request method="GET" doc:name="Request" doc:id="cec0f6cc-ed0f-40ab-9d1c-9c4177d4a5ce" config-ref="HTTP_Request_configuration" url="#[vars.solacePayload.fullUrl]">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"x-api-key" : "${fhir.xApiKey}",
+	"Request-Context" : "${fhir.requestContext}"
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="0999c8db-2f68-4a7b-bb0d-f341c6587cda" message="getting fhir resource"/>
+	</sub-flow>
+</mule>
